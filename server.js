@@ -23,6 +23,8 @@ express()
 
   .post("/exercises/greetings", createGreeting)
 
+  // .post("/exercises/greetings", batchImport)
+
   // exercise 2
 
   // handle 404s

@@ -9,8 +9,8 @@ const options = {
 };
 
 const createGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
   try {
-    const client = await MongoClient(MONGO_URI, options);
     await client.connect();
     console.log(req.body);
     const db = client.db("exercises");
@@ -23,6 +23,7 @@ const createGreeting = async (req, res) => {
     res
       .status(500)
       .json({ status: 500, data: req.body, message: error.message });
+    //   client.close();
   }
   client.close();
 };
