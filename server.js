@@ -16,6 +16,9 @@ express()
   .use("/", express.static(__dirname + "/"))
 
   // exercise 1
+  .get("/exercise_1/users", getUsers)
+
+  .post("/exercise_1/users", addUser)
 
   // exercise 2
 
