@@ -2,10 +2,7 @@ const { MongoClient } = require("mongodb");
 
 require("dotenv").config();
 const { MONGO_URI } = process.env;
-const mongoTwo = process.env.MONGO_URI;
 console.log(MONGO_URI);
-// console.log("process.env", process.env);
-// console.log("mongoTwo", mongoTwo);
 
 const options = {
   useNewUrlParser: true,
