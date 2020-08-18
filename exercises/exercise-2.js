@@ -106,4 +106,62 @@ const getGreetings = async (req, res) => {
   client.close();
 };
 
-module.exports = { createGreeting, getGreeting, getGreetings };
+const deleteGreeting = async (req, res) => {
+  const _id = req.params._id;
+
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db("exercises");
+
+    const r = await db.collection("greetings").deleteOne({ _id });
+    assert.equal(1, r.deletedCount);
+    res
+      .status(200)
+      .json({ status: 200, data: _id, message: "one entry deleted" });
+  } catch (error) {
+    console.log(error.stack);
+    res.status(500).json({ status: 500, data: _id, message: error.message });
+    //   client.close();
+  }
+  client.close();
+};
+
+const updateGreeting = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+  const _id = req.params._id;
+  try {
+    const query = { _id };
+    let newValues = {};
+
+    if (req.body.hello) {
+      newValues = { $set: { hello: req.body.hello } };
+    } else {
+      throw new Error("please enter an update for 'hello'");
+    }
+
+    await client.connect();
+    const db = client.db("exercises");
+
+    const r = await db.collection("greetings").updateOne(query, newValues);
+    await db
+      .collection("greetings")
+      .updateOne({ _id: "KY" }, { $set: { hello: "salut" } });
+    assert.equal(1, r.matchedCount);
+    assert.equal(1, r.modifiedCount);
+
+    res.status(200).json({ status: 200, data: _id, ...req.body });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ status: 500, data: _id, message: error.message });
+  }
+  client.close();
+};
+
+module.exports = {
+  createGreeting,
+  getGreeting,
+  getGreetings,
+  deleteGreeting,
+  updateGreeting,
+};
