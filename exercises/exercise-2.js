@@ -144,9 +144,9 @@ const updateGreeting = async (req, res) => {
     const db = client.db("exercises");
 
     const r = await db.collection("greetings").updateOne(query, newValues);
-    await db
-      .collection("greetings")
-      .updateOne({ _id: "KY" }, { $set: { hello: "salut" } });
+    // await db
+    //   .collection("greetings")
+    //   .updateOne({ _id: "KY" }, { $set: { hello: "salut" } });
     assert.equal(1, r.matchedCount);
     assert.equal(1, r.modifiedCount);
 
