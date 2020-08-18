@@ -46,7 +46,64 @@ const getGreeting = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-  //   res.status(200).json("avocado");
 };
 
-module.exports = { createGreeting, getGreeting };
+const getGreetings = async (req, res) => {
+  console.log("req.query", req.query);
+  const start = await Number(req.query.start);
+
+  const limit = await Number(req.query.limit);
+  console.log("start", start, "limit", limit);
+  let end = 0;
+
+  if (start && limit) {
+    end = start + limit;
+  } else if (limit) {
+    end = limit;
+  }
+  console.log("end", end);
+
+  const client = await MongoClient(MONGO_URI, options);
+  try {
+    await client.connect();
+    const db = client.db("exercises");
+
+    const data = await db.collection("greetings").find().toArray();
+
+    console.log(data.length);
+
+    if (start > data.length) {
+      res
+        .status(404)
+        .json({ status: 404, data: `we only have ${data.length} entries` });
+    } else if (start && limit) {
+      res.status(200).json({
+        status: 200,
+        start: start,
+        limit: Math.min(limit, data.length - start),
+        data: data.slice(start - 1, Math.min(end, data.length)),
+      });
+    } else if (limit) {
+      res.status(200).json({
+        status: 200,
+        start: start,
+        limit: Math.min(limit, data.length - start),
+        data: data.slice(0, Math.min(end, data.length)),
+      });
+    } else if (data.length > 25) {
+      res.status(200).json({ status: 200, data: data.slice(0, 25) });
+    } else if (data.length) {
+      res.status(200).json({ status: 200, data: data });
+    } else {
+      res.status(404).json({
+        status: 404,
+        data: "we can't find what you're looking for.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  client.close();
+};
+
+module.exports = { createGreeting, getGreeting, getGreetings };
